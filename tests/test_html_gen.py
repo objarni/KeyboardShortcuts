@@ -1,11 +1,7 @@
 from xml.dom import minidom
-from hypothesis import given, example, settings, reproduce_failure
-import hypothesis.strategies as gen
+from hypothesis import given, example, settings
 
-KB_GEN = gen.text(min_size=1)
-DESC_GEN = gen.text(min_size=1)
-KB_DESC_GEN = gen.tuples(KB_GEN, DESC_GEN)
-SHORTCUTLIST_GEN = gen.lists(KB_DESC_GEN, min_size=1)
+from src.html_gen import SHORTCUTLIST_GEN, ShortCutHtmlBuilder
 
 
 @given(SHORTCUTLIST_GEN)
@@ -78,19 +74,5 @@ def test_every_end_tr_is_followed_by_newline(shortcut_list):
     html = b.generate_html()
     assert html.count('</tr>') == html.count('</tr>\n')
 
-
-
-class ShortCutHtmlBuilder:
-    def __init__(self):
-        self.shortcuts = []
-
-    def add_shortcut(self, kb, desc):
-        self.shortcuts.append((kb, desc))
-
-    def generate_html(self):
-        rows = ''
-        for kb, desc in self.shortcuts:
-            rows += f'<tr><td>{kb}</td><td>{desc}</td></tr>\n'
-        return f'<table>{rows}</table>'
 
 
