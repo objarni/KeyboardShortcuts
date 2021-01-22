@@ -1,7 +1,8 @@
 from hypothesis import strategies as gen
 
-KB_GEN = gen.text(min_size=1)
-DESC_GEN = gen.text(min_size=1)
+ALPHABET = "abcdefhijklmnopqrstuvwxyzåäö+ "
+KB_GEN = gen.text(min_size=1, alphabet=ALPHABET)
+DESC_GEN = gen.text(min_size=1, alphabet=ALPHABET)
 KB_DESC_GEN = gen.tuples(KB_GEN, DESC_GEN)
 SHORTCUTLIST_GEN = gen.lists(KB_DESC_GEN, min_size=1)
 
