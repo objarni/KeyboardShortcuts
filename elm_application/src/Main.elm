@@ -13,14 +13,14 @@ type Msg
     | ClickLink UrlRequest
 
 
-type alias DocsRoute =
-    ( String, Maybe String )
-
-
 type alias Model =
     { navKey : Nav.Key
     , route : Maybe DocsRoute
     }
+
+
+type alias DocsRoute =
+    ( String, Maybe String )
 
 
 init : () -> Url -> Nav.Key -> ( Model, Cmd Msg )
