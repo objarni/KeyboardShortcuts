@@ -1,7 +1,13 @@
 from xml.dom import minidom
-from hypothesis import given, example, settings
+from hypothesis import given, example, settings, strategies as gen
 
-from src.html_gen import SHORTCUTLIST_GEN, ShortCutHtmlBuilder
+from src.html_gen import ShortCutHtmlBuilder
+
+ALPHABET = "abcdefhijklmnopqrstuvwxyzåäö+ "
+KB_GEN = gen.text(min_size=1, alphabet=ALPHABET)
+DESC_GEN = gen.text(min_size=1, alphabet=ALPHABET)
+KB_DESC_GEN = gen.tuples(KB_GEN, DESC_GEN)
+SHORTCUTLIST_GEN = gen.lists(KB_DESC_GEN, min_size=1)
 
 
 @given(SHORTCUTLIST_GEN)
@@ -73,6 +79,4 @@ def test_every_end_tr_is_followed_by_newline(shortcut_list):
         b.add_shortcut(kb, desc)
     html = b.generate_html()
     assert html.count('</tr>') == html.count('</tr>\n')
-
-
 
