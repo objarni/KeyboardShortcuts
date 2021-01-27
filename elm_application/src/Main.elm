@@ -48,6 +48,13 @@ update msg model =
                     ( model, Nav.load url )
 
 
+
+-- Potential: unite all data, and let functions
+-- shortcutContexts and lookupContext use that
+-- structure instead of having these two almost
+-- the same data structures
+
+
 shortcutContexts =
     [ ( "/i3", "i3" )
     , ( "/intellij", "IntelliJ" )
@@ -57,18 +64,40 @@ shortcutContexts =
     ]
 
 
-lookupContext : String -> List ShortCut
+
+-- Potential: Software has a 'any context' SubContext,
+-- for kb shortcuts that are available in any context
+
+
+type alias Software =
+    List SubContext
+
+
+type SubContext
+    = SubContext String (List ShortCut)
+
+
+lookupContext : String -> Software
 lookupContext context =
     case context of
         "i3" ->
-            [ { kbCombo = "Meta+Shift+V", description = "Edit i3 config" }
+            [ SubContext "i3"
+                [ { kbCombo = "Meta+Shift+V", description = "Edit i3 config" }
+                ]
             ]
 
         "gothic2" ->
-            [ { kbCombo = "LMB", description = "Action (eat, talk, pick up)" }
-            , { kbCombo = "Ctrl", description = "Jump (when not in inventory)" }
-            , { kbCombo = "Tab", description = "Inventory on/off" }
-            , { kbCombo = "C", description = "Stats" }
+            [ SubContext "Inventory"
+                [ { kbCombo = "Ctrl", description = "Drop item" }
+                , { kbCombo = "Tab", description = "Inventory on/off" }
+                , { kbCombo = "C", description = "Stats" }
+                ]
+            , SubContext "Not inventory"
+                [ { kbCombo = "LMB", description = "Action (eat, talk, pick up)" }
+                , { kbCombo = "Ctrl", description = "Jump" }
+                , { kbCombo = "Tab", description = "Inventory on/off" }
+                , { kbCombo = "C", description = "Stats" }
+                ]
             ]
 
         _ ->
@@ -115,13 +144,22 @@ view model =
                            )
 
                 Nothing ->
-                    "Invalid route"
+                    "Welcome to Keyboard Shortcuts helper!"
+
+        context =
+            case model.route of
+                Just route ->
+                    let
+                        contextName =
+                            Tuple.first route
+                    in
+                    lookupContext contextName
+
+                Nothing ->
+                    []
 
         header =
             h1 [] [ text ("Keyboard Shortcuts in " ++ title) ]
-
-        shortcuts =
-            lookupContext title
 
         shortcutHtml : ShortCut -> Html msg
         shortcutHtml shortcut =
@@ -130,15 +168,28 @@ view model =
                 , td [ pad ] [ text shortcut.description ]
                 ]
 
-        shortcutTable : Html msg
-        shortcutTable =
+        shortcutTable : List ShortCut -> Html msg
+        shortcutTable shortcuts =
             table [ pad ] (List.map shortcutHtml shortcuts)
+
+        subContextHtml : SubContext -> Html msg
+        subContextHtml (SubContext name shortcuts) =
+            div []
+                [ div []
+                    [ h1 [] [ text ("Context: " ++ name) ]
+                    , shortcutTable shortcuts
+                    ]
+                ]
+
+        contextHtml : Software -> Html msg
+        contextHtml subContexts =
+            div [] (List.map subContextHtml subContexts)
     in
     { title = title ++ " shortcuts"
     , body =
         [ menu
         , header
-        , shortcutTable
+        , contextHtml context
         ]
     }
 
