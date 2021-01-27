@@ -64,6 +64,13 @@ lookupContext context =
             [ { kbCombo = "Meta+Shift+V", description = "Edit i3 config" }
             ]
 
+        "gothic2" ->
+            [ { kbCombo = "LMB", description = "Action (eat, talk, pick up)" }
+            , { kbCombo = "Ctrl", description = "Jump (when not in inventory)" }
+            , { kbCombo = "Tab", description = "Inventory on/off" }
+            , { kbCombo = "C", description = "Stats" }
+            ]
+
         _ ->
             []
 
@@ -72,6 +79,10 @@ type alias ShortCut =
     { kbCombo : String
     , description : String
     }
+
+
+pad =
+    style "padding" "10px"
 
 
 view : Model -> Document Msg
@@ -88,7 +99,7 @@ view model =
             a [ inline, padded, href route ] [ text txt ]
 
         menu =
-            div [ style "padding" "10px", style "border-bottom" "1px solid #c0c0c0" ]
+            div [ pad, style "border-bottom" "1px solid #c0c0c0" ]
                 (List.map makeLink shortcutContexts)
 
         title =
@@ -105,11 +116,29 @@ view model =
 
                 Nothing ->
                     "Invalid route"
+
+        header =
+            h1 [] [ text ("Keyboard Shortcuts in " ++ title) ]
+
+        shortcuts =
+            lookupContext title
+
+        shortcutHtml : ShortCut -> Html msg
+        shortcutHtml shortcut =
+            tr []
+                [ td [ pad ] [ text shortcut.kbCombo ]
+                , td [ pad ] [ text shortcut.description ]
+                ]
+
+        shortcutTable : Html msg
+        shortcutTable =
+            table [ pad ] (List.map shortcutHtml shortcuts)
     in
     { title = title ++ " shortcuts"
     , body =
         [ menu
-        , h2 [] [ text title ]
+        , header
+        , shortcutTable
         ]
     }
 
