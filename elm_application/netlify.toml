@@ -4,3 +4,9 @@
 
 [build.environment]
   ELM_HOME = "$NETLIFY_BUILD_BASE/cache/elm"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 301
+  force = false
