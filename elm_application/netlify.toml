@@ -7,6 +7,6 @@
 
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/"
   status = 301
   force = false
