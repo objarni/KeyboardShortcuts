@@ -86,18 +86,33 @@ lookupContext context =
                 ]
             ]
 
+        "intellij" ->
+            [ SubContext "debugger"
+                [ { kbCombo = "Ctrl+Shift+F5", description = "Step into" }
+                , { kbCombo = "Shift+F5", description = "Step over" }
+                , { kbCombo = "Alt+Shift+F5", description = "Step out" }
+                ]
+            ]
+
         "gothic2" ->
-            [ SubContext "Inventory"
-                [ { kbCombo = "Ctrl", description = "Drop item" }
-                , { kbCombo = "Tab", description = "Inventory on/off" }
-                , { kbCombo = "C", description = "Stats" }
-                ]
-            , SubContext "Not inventory"
-                [ { kbCombo = "LMB", description = "Action (eat, talk, pick up)" }
-                , { kbCombo = "Ctrl", description = "Jump" }
-                , { kbCombo = "Tab", description = "Inventory on/off" }
-                , { kbCombo = "C", description = "Stats" }
-                ]
+            let
+                inventory =
+                    SubContext "Inventory"
+                        [ { kbCombo = "LMB", description = "Action (eat, talk, pick up)" }
+                        , { kbCombo = "Ctrl", description = "Jump" }
+                        , { kbCombo = "Tab", description = "Inventory on/off" }
+                        , { kbCombo = "C", description = "Stats" }
+                        ]
+
+                inGame =
+                    SubContext "In game"
+                        [ { kbCombo = "Ctrl", description = "Drop item" }
+                        , { kbCombo = "Tab", description = "Inventory on/off" }
+                        , { kbCombo = "C", description = "Stats" }
+                        ]
+            in
+            [ inGame
+            , inventory
             ]
 
         _ ->
@@ -159,7 +174,7 @@ view model =
                     []
 
         header =
-            h1 [] [ text ("Keyboard Shortcuts in " ++ title) ]
+            h1 [] [ text title ]
 
         shortcutHtml : ShortCut -> Html msg
         shortcutHtml shortcut =
